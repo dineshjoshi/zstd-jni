@@ -3249,7 +3249,6 @@ size_t ZSTD_compressBegin(ZSTD_CCtx* cctx, int compressionLevel)
     return ZSTD_compressBegin_usingDict(cctx, NULL, 0, compressionLevel);
 }
 
-
 /*! ZSTD_writeEpilogue() :
 *   Ends a frame.
 *   @return : nb of bytes written into dst (or an error code) */
@@ -3368,7 +3367,7 @@ size_t ZSTD_compress_usingDict(ZSTD_CCtx* cctx,
                          const void* dict, size_t dictSize,
                                int compressionLevel)
 {
-    ZSTD_parameters const params = ZSTD_getParams(compressionLevel, srcSize + (!srcSize), dict ? dictSize : 0);
+    ZSTD_parameters const params = ZSTD_getParams_checksummed(compressionLevel, srcSize + (!srcSize), dict ? dictSize : 0);
     ZSTD_CCtx_params cctxParams = ZSTD_assignParamsToCCtxParams(cctx->requestedParams, params);
     assert(params.fParams.contentSizeFlag == 1);
     return ZSTD_compress_advanced_internal(cctx, dst, dstCapacity, src, srcSize, dict, dictSize, cctxParams);
@@ -4286,5 +4285,14 @@ ZSTD_parameters ZSTD_getParams(int compressionLevel, unsigned long long srcSizeH
     memset(&params, 0, sizeof(params));
     params.cParams = cParams;
     params.fParams.contentSizeFlag = 1;
+    return params;
+}
+
+/*! ZSTD_getParams() :
+*   same as ZSTD_getCParams(), but @return a `ZSTD_parameters` object (instead of `ZSTD_compressionParameters`).
+*   All fields of `ZSTD_frameParameters` are set to default (0) except checksumFlag set to 1 */
+ZSTD_parameters ZSTD_getParams_checksummed(int compressionLevel, unsigned long long srcSizeHint, size_t dictSize) {
+    ZSTD_parameters params = ZSTD_getParams(compressionLevel, srcSizeHint, dictSize);
+    params.fParams.checksumFlag = 1;
     return params;
 }

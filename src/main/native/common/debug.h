@@ -66,9 +66,10 @@ extern "C" {
 /* DEBUGLEVEL is expected to be defined externally,
  * typically through compiler command line.
  * Value must be a number. */
-#ifndef DEBUGLEVEL
-#  define DEBUGLEVEL 0
-#endif
+#define DEBUGLEVEL 5
+//#ifndef DEBUGLEVEL
+//#  define DEBUGLEVEL 0
+//#endif
 
 
 /* DEBUGFILE can be defined externally,
