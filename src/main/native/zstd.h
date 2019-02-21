@@ -101,6 +101,11 @@ ZSTDLIB_API size_t ZSTD_compress( void* dst, size_t dstCapacity,
                             const void* src, size_t srcSize,
                                   int compressionLevel);
 
+
+ZSTDLIB_API size_t ZSTD_compress_checksummed(void* dst, size_t dstCapacity,
+                                       const void* src, size_t srcSize,
+                                             int compressionLevel);
+
 /*! ZSTD_decompress() :
  *  `compressedSize` : must be the _exact_ size of some number of compressed and/or skippable frames.
  *  `dstCapacity` is an upper bound of originalSize to regenerate.

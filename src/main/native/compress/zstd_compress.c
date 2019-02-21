@@ -3368,7 +3368,6 @@ size_t ZSTD_compress_usingDict(ZSTD_CCtx* cctx,
                                int compressionLevel)
 {
     ZSTD_parameters params = ZSTD_getParams(compressionLevel, srcSize + (!srcSize), dict ? dictSize : 0);
-    params.fParams.checksumFlag = 1;
     ZSTD_CCtx_params cctxParams = ZSTD_assignParamsToCCtxParams(cctx->requestedParams, params);
     assert(params.fParams.contentSizeFlag == 1);
     return ZSTD_compress_advanced_internal(cctx, dst, dstCapacity, src, srcSize, dict, dictSize, cctxParams);
@@ -3395,6 +3394,26 @@ size_t ZSTD_compress(void* dst, size_t dstCapacity,
     ZSTD_freeCCtxContent(&ctxBody);   /* can't free ctxBody itself, as it's on stack; free only heap content */
     return result;
 }
+
+size_t ZSTD_compress_checksummed(void* dst, size_t dstCapacity,
+                           const void* src, size_t srcSize,
+                                 int compressionLevel)
+{
+    size_t result;
+    ZSTD_CCtx ctxBody;
+    ZSTD_initCCtx(&ctxBody, ZSTD_defaultCMem);
+
+    ZSTD_parameters params = ZSTD_getParams(compressionLevel, srcSize + (!srcSize), 0);
+    params.fParams.checksumFlag = 1;
+    ZSTD_CCtx_params cctxParams = ZSTD_assignParamsToCCtxParams(ctxBody.requestedParams, params);
+    assert(params.fParams.contentSizeFlag == 1);
+    result = ZSTD_compress_advanced_internal(&ctxBody, dst, dstCapacity, src, srcSize, NULL, 0, cctxParams);
+
+    ZSTD_freeCCtxContent(&ctxBody);   /* can't free ctxBody itself, as it's on stack; free only heap content */
+    return result;
+}
+
+
 
 
 /* =====  Dictionary API  ===== */

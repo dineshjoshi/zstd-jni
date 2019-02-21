@@ -59,7 +59,7 @@ JNIEXPORT jlong JNICALL Java_com_github_luben_zstd_Zstd_compressDirectByteBuffer
     char *src_buf_ptr = (char*)(*env)->GetDirectBufferAddress(env, src_buf);
     if (src_buf_ptr == NULL) return size;
 
-    size = ZSTD_compress(dst_buf_ptr + dst_offset, (size_t) dst_size, src_buf_ptr + src_offset, (size_t) src_size, (int) level);
+    size = ZSTD_compress_checksummed(dst_buf_ptr + dst_offset, (size_t) dst_size, src_buf_ptr + src_offset, (size_t) src_size, (int) level);
 
     return size;
 }
